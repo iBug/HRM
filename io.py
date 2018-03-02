@@ -5,13 +5,17 @@ class Program(object):
         self.initMem = []
         self.cmds = []
 
-def try_convert(s):
+def parseArg(s):
+    if s.lower in ('none', '_'):
+        return Value(None)
+    if s.startswith('[') and s.endswith(']'):
+        return Reference(int(s[1:-1]))
     try:
-        return int(s)
+        return Value(int(s))
     except ValueError:
-        if s.lower() == 'none':
-            return None
-        return str(s)
+        if len(s) != 1:
+            raise ValueError('"{}" is not an argument'.format(s))
+        return Value(s)
 
 def readProgram(stream):
     prog = Program()
@@ -22,4 +26,11 @@ def readProgram(stream):
 
     for line in lines:
         cmd = [i.strip() for i in line.split()]
+        cmd = Command(cmd[0], *[parseArg(i) for i in cmd[1:]])
         prog.cmds += cmd
+
+def parseInput(s):
+    return [parseArg(i) for i in s.split()]
+
+def parseOutput(outList):
+    return ' '.join([str(i.v) for i in outList])
