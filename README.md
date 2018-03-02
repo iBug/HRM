@@ -1,4 +1,4 @@
-# HRM (Human Resource Machine Programming Language)
+# HRM (Human Resource Machine Programming Language) *UNFINISHED*
 
 HRM is an assembly-like programming language used in the game [Human Resource Machine][w] by 2D Boys. It's a [Harvard architecture][wa] machine with separate data RAM and instruction RAM.
 

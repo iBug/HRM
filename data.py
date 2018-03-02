@@ -1,10 +1,10 @@
-class Command(object):
-    def __init__(self, cmd, op=None):
-        self.cmd = cmd  # Command
-        self.op = op  # Operand
+MAX_INT = 999
+MIN_INT = -999
 
-    def __del__(self):
-        pass
+class Command(object):
+    def __init__(self, cmd, *ops):
+        self.cmd = cmd  # Command
+        self.ops = ops  # Operands
 
 class Value(object):
 
@@ -70,5 +70,18 @@ class Value(object):
         if is_instance(v, str):
             return len(v) == 1 and v.isalpha()
         if is_instance(v, int):
-            return -999 <= v <= 999
+            return MIN_INT <= v <= MAX_INT
         return v is None
+
+class Reference(object):
+    def __init__(self, v):
+        if is_instance(v, Value):
+            v = v.v
+        if not is_instance(v, int):
+            raise TypeError("Index must be integer")
+        if not 0 <= v <= data.MAX_INT:
+            raise ValueError("Index out of range")
+        self.v = v
+
+    def __get__(self, obj, objtype=None):
+        return obj[self.v]
