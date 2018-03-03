@@ -24,25 +24,25 @@ def readProgram(stream):
     prog = Program()
     lines = [i.strip() for i in stream]
     while True:
-        Meta = False  # Processed as a meta line
+        isMeta = False  # Processed as a meta line
         meta = lines[0].split()
         if len(meta) == 0:
-            Meta = True
+            isMeta = True
             lines = lines[1:]
             continue
 
         meta[0] = meta[0].lower()
         if meta[0] == 'mem':
-            Meta = True
+            isMeta = True
             prog.initMem = [parseArg(i.strip()) for i in meta[1:]]
         if meta[0] == 'memsize':
-            Meta = True
+            isMeta = True
             memlen = int(meta[1])
             assert 0 < memlen <= MAX_INT
             print(memlen)
             prog.dynamicMem = False
-            prog.initMem += [Value(None)] * ((memlen - len(prog.initMem)) if len(prog.initMem) <= memlen else 0 )
-        if Meta:
+            prog.initMem += [Value(None)] * ((memlen - len(prog.initMem)) if len(prog.initMem) <= memlen else 0)
+        if isMeta:
             lines = lines[1:]
         else:
             break
@@ -62,9 +62,9 @@ def readProgram(stream):
         cmd[0] = cmd[0].lower()
         if isJump(cmd[0]):
             jumps.append(len(prog.cmds))  # Record jumps
-            prog.cmds.append( Command(cmd[0], *cmd[1]) )
+            prog.cmds.append(Command(cmd[0], *cmd[1]))
             continue
-        prog.cmds.append( Command(cmd[0], *[parseArg(i) for i in cmd[1:]]) )
+        prog.cmds.append(Command(cmd[0], *[parseArg(i) for i in cmd[1:]]))
 
     for i in jumps:
         # Lookup and replace

@@ -1,7 +1,6 @@
 #!/usr/bin/python3
 
 from vm import VM
-from command import runCommand
 from parsing import readProgram, parseInput, parseOutput
 import sys
 

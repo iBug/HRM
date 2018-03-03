@@ -1,0 +1,18 @@
+language: python
+sudo: false
+python:
+  - '3.6'
+install:
+  - pip3 install -r test/requirements.txt
+script:
+  - flake8 ./
+branches:
+  only:
+    - master
+cache:
+  directories:
+    - $HOME/virtualenv/python3.6.*
+    - $HOME/.cache/pip
+before_cache:
+  - rm -f $HOME/.cache/pip/log/debug.log
+  - rm -rf $HOME/.cache/pip/http

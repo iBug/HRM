@@ -8,7 +8,7 @@ class Command(object):
 
     def __str__(self):
         return repr(self)
-    
+
     def __repr__(self):
         return self.cmd + (' ' + ' '.join([str(i) for i in self.ops]) if len(self.ops) else '')
 

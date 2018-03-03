@@ -1,4 +1,4 @@
-from data import Value, Command, CommandError, MAX_INT
+from data import Value, CommandError, MAX_INT
 from command import getCommand
 
 MAX_MEM = MAX_INT

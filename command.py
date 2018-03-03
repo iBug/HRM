@@ -36,7 +36,7 @@ def inbox(vm):
     except IndexError:
         vm.core.ax = Value(None)
         raise CommandError("reached end of input")
-    
+
 @command(aliases=['out', 'output'])
 def outbox(vm):
     if vm.core.ax == Value(None):
@@ -52,7 +52,7 @@ def jump(vm, line):
 
 @command(aliases=['jumpz', 'jump_if_zero'], incr_pc=False, is_jump=True)
 def jz(vm, line):
-    if vm.core.ax == None:
+    if vm.core.ax == Value(None):
         raise ValueError("You have nothing to test")
     if vm.core.ax.zero():
         vm.core.pc = line
