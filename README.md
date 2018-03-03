@@ -1,5 +1,8 @@
 # HRM (Human Resource Machine Programming Language)
 
+[![Build Status](https://travis-ci.org/iBug/HRM.svg?branch=master)](https://travis-ci.org/iBug/HRM)
+
+
 HRM is an assembly-like programming language used in the game [Human Resource Machine][w] by 2D Boys. It's a [Harvard architecture][wa] machine with separate data RAM and instruction RAM.
 
 Download the original game from [App Store][ipa] or [Google Play][apk], or [Steam][pc] if you want it on a PC.
