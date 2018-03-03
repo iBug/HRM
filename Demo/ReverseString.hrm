@@ -1,0 +1,18 @@
+MEM 0 none none
+JUMP a
+c:
+COPYFROM 0
+OUTBOX
+a:
+BUMP+ 0
+INBOX
+JZ d
+COPYTO [0]
+JUMP a
+b:
+COPYFROM [0]
+OUTBOX
+d:
+BUMP- 0
+JZ c
+JUMP b

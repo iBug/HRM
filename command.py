@@ -39,7 +39,9 @@ def inbox(vm):
     
 @command(aliases=['out', 'output'])
 def outbox(vm):
-    vm.ostream.append(vm.core.ax)
+    if vm.core.ax == Value(None):
+        raise CommandError('You have nothing to outbox')
+    vm.ostream.append(vm.core.ax.copy())
     vm.core.ax = Value(None)
     return True
 
@@ -48,25 +50,29 @@ def jump(vm, line):
     vm.core.pc = line
     return True
 
-@command(aliases=['jumpzero', 'jump_if_zero'], incr_pc=False, is_jump=True)
+@command(aliases=['jumpz', 'jump_if_zero'], incr_pc=False, is_jump=True)
 def jz(vm, line):
     if vm.core.ax == None:
         raise ValueError("You have nothing to test")
-    if vm.core.ax == 0:
+    if vm.core.ax.zero():
         vm.core.pc = line
+    else:
+        vm.core.pc += 1
     return True
 
-@command(aliases=['jumpneg', 'jump_if_negative'], incr_pc=False, is_jump=True)
+@command(aliases=['jumpn', 'jump_if_negative'], incr_pc=False, is_jump=True)
 def jn(vm, line):
-    if not vm.core.isnum():
+    if not vm.core.ax.isnum():
         raise ValueError("You can only test a number")
-    if vm.core.ax < 0:
+    if vm.core.ax.neg():
         vm.core.pc = line
+    else:
+        vm.core.pc += 1
     return True
 
 def getMemIndex(vm, v):
     if isinstance(v, Reference):
-        return getMemIndex(vm.getMem(v.v))
+        return getMemIndex(vm, vm.getMem(v.v))
     if isinstance(v, Value):
         if v.isnum():
             return v.v
@@ -95,16 +101,17 @@ def sub(vm, target):
 
 @command(aliases=['bump+'])
 def bumpup(vm, target):
-    vm.runCmd(copyfrom, target)
+    # Don't call COPYFROM and COPYTO directly, they will increment the program counter
+    vm.core.ax = vm.getMem(getMemIndex(vm, target))
     vm.core.ax += Value(1)
-    vm.runCmd(copyto, target)
+    vm.setMem(getMemIndex(vm, target), vm.core.ax)
     return True
 
 @command(aliases=['bump-', 'bumpdn'])
 def bumpdown(vm, target):
-    vm.runCmd(copyfrom, target)
+    vm.core.ax = vm.getMem(getMemIndex(vm, target))
     vm.core.ax -= Value(1)
-    vm.runCmd(copyto, target)
+    vm.setMem(getMemIndex(vm, target), vm.core.ax)
     return True
 
 def getCommand(cmd):
@@ -113,8 +120,8 @@ def getCommand(cmd):
     except KeyError:
         raise NameError('No such command "{}"'.format(cmd))
 
-def runCommand(cmd, vm, *cmdArgs):
-    vm.runCmd(getCommand(cmd), *cmdArgs)
+def runCommand(vm, cmd, *cmdArgs):
+    vm.runCmd(Command(cmd, *cmdArgs))
 
 def isJump(cmd):
     return cmd in JUMPS

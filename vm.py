@@ -25,7 +25,7 @@ class VM(object):
 
     def setMem(self, index, value):
         try:
-            self.mem[index] = value
+            self.mem[index] = value.copy()
         except TypeError:
             raise TypeError("Index must be integer")
         except IndexError as e:
@@ -35,7 +35,7 @@ class VM(object):
 
     def getMem(self, index):
         try:
-            return self.mem[index]
+            return self.mem[index].copy()
         except TypeError:
             raise TypeError("Index must be integer")
         except IndexError:

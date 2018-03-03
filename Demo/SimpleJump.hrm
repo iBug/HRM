@@ -1,5 +1,5 @@
 INBOX
 JUMP a
 COPYTO 0
-:a
+a:
 OUTBOX

@@ -1,4 +1,4 @@
-from data import Command, Value, Reference
+from data import Command, Value, Reference, MAX_INT
 from command import isJump
 
 class Program(object):
@@ -9,7 +9,7 @@ class Program(object):
         self.tags = {}
 
 def parseArg(s):
-    if s.lower in ('none', '_'):
+    if s.lower() in set(('none', '-')):
         return Value(None)
     if s.startswith('[') and s.endswith(']'):
         return Reference(int(s[1:-1]))
@@ -24,26 +24,39 @@ def readProgram(stream):
     prog = Program()
     lines = [i.strip() for i in stream]
     while True:
+        Meta = False  # Processed as a meta line
         meta = lines[0].split()
-        meta[0] = meta[0].lower()
-        if meta[0] == 'mem':
-            prog.initMem = [parseArg(i.strip()) for i in meta[1:]]
+        if len(meta) == 0:
+            Meta = True
             lines = lines[1:]
             continue
-        if meta[0] == 'memlen':
+
+        meta[0] = meta[0].lower()
+        if meta[0] == 'mem':
+            Meta = True
+            prog.initMem = [parseArg(i.strip()) for i in meta[1:]]
+        if meta[0] == 'memsize':
+            Meta = True
             memlen = int(meta[1])
             assert 0 < memlen <= MAX_INT
+            print(memlen)
             prog.dynamicMem = False
-            prog.initMem += [Value(None)] * (memlen - len(prog.initMem) if len(prog.initMem) <= memlen else 0 )
-            continue
-        break
+            prog.initMem += [Value(None)] * ((memlen - len(prog.initMem)) if len(prog.initMem) <= memlen else 0 )
+        if Meta:
+            lines = lines[1:]
+        else:
+            break
 
     jumps = []  # Later we're going to parse the tags
 
     for line in lines:
         cmd = [i.strip() for i in line.split()]
-        if cmd[0].startswith(':'):  # This is a jump tag!
-            prog.tags[cmd[0][1:]] = len(prog.cmds)
+        if len(cmd) == 0:  # Blank line, ignore it
+            continue
+        if cmd[0].startswith('#') or cmd[0].lower() == 'comment':  # This is a comment
+            continue
+        if cmd[0].endswith(':'):  # This is a jump tag
+            prog.tags[cmd[0][:-1]] = len(prog.cmds)
             continue
 
         cmd[0] = cmd[0].lower()

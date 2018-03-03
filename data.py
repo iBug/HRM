@@ -6,6 +6,12 @@ class Command(object):
         self.cmd = cmd  # Command
         self.ops = list(ops)  # Operands
 
+    def __str__(self):
+        return repr(self)
+    
+    def __repr__(self):
+        return self.cmd + (' ' + ' '.join([str(i) for i in self.ops]) if len(self.ops) else '')
+
 class CommandError(Command, Exception):
     pass
 
@@ -47,6 +53,12 @@ class Value(object):
         self.v = (self - other).v
         return self
 
+    def zero(self):
+        return self.v == 0
+
+    def neg(self):
+        return self.isnum() and self.v < 0
+
     def inc(self):
         if not self.isnum():
             raise TypeError("Can only bump number")
@@ -69,6 +81,9 @@ class Value(object):
     def __repr__(self):
         return str(self.v)
 
+    def copy(self):
+        return Value(self.v)
+
     @staticmethod
     def valid(v):
         if isinstance(v, Value):
@@ -85,9 +100,15 @@ class Reference(object):
             v = v.v
         if not isinstance(v, int):
             raise TypeError("Index must be integer")
-        if not 0 <= v <= data.MAX_INT:
+        if not 0 <= v <= MAX_INT:
             raise ValueError("Index out of range")
         self.v = v
 
     def __get__(self, obj, objtype=None):
         return obj[self.v]
+
+    def __str__(self):
+        return '[{}]'.format(self.v)
+
+    def __repr__(self):
+        return '[{}]'.format(self.v)
