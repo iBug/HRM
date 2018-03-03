@@ -4,21 +4,19 @@ MIN_INT = -999
 class Command(object):
     def __init__(self, cmd, *ops):
         self.cmd = cmd  # Command
-        self.ops = ops  # Operands
+        self.ops = list(ops)  # Operands
+
+class CommandError(Command, Exception):
+    pass
 
 class Value(object):
-
-    NONE = 0
-    LETTER = 1
-    NUMBER = 2
-
     def __init__(self, v=None):
-        if is_instance(v, Value):
+        if isinstance(v, Value):
             self.v = v.v
             return
         if not Value.valid(v):
             raise ValueError("Invalid value")
-        if is_instance(v, str):
+        if isinstance(v, str):
             self.v = v.upper()
         else:
             self.v = v
@@ -33,6 +31,7 @@ class Value(object):
 
     def __iadd__(self, other):
         self.v = (self + other).v
+        return self
 
     def __sub__(self, other):
         if not all((self.isnum(), other.isnum())) and not all((self.isletter(), other.isletter())):
@@ -46,6 +45,7 @@ class Value(object):
 
     def __isub__(self, other):
         self.v = (self - other).v
+        return self
 
     def inc(self):
         if not self.isnum():
@@ -58,26 +58,32 @@ class Value(object):
         self -= Value(1)
 
     def isnum(self):
-        return is_instance(self.v, int)
+        return isinstance(self.v, int)
 
     def isletter(self):
-        return is_instance(self.v, str) and Value.valid(self)
+        return isinstance(self.v, str) and Value.valid(self)
+
+    def __str__(self):
+        return str(self.v)
+
+    def __repr__(self):
+        return str(self.v)
 
     @staticmethod
     def valid(v):
-        if is_instance(v, Value):
+        if isinstance(v, Value):
             return Value.valid(v.v)
-        if is_instance(v, str):
+        if isinstance(v, str):
             return len(v) == 1 and v.isalpha()
-        if is_instance(v, int):
+        if isinstance(v, int):
             return MIN_INT <= v <= MAX_INT
         return v is None
 
 class Reference(object):
     def __init__(self, v):
-        if is_instance(v, Value):
+        if isinstance(v, Value):
             v = v.v
-        if not is_instance(v, int):
+        if not isinstance(v, int):
             raise TypeError("Index must be integer")
         if not 0 <= v <= data.MAX_INT:
             raise ValueError("Index out of range")

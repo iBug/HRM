@@ -1,0 +1,5 @@
+INBOX
+JUMP a
+COPYTO 0
+:a
+OUTBOX

@@ -1,4 +1,5 @@
-from data import Value, MAX_INT
+from data import Value, Command, CommandError, MAX_INT
+from command import getCommand
 
 MAX_MEM = MAX_INT
 
@@ -11,9 +12,12 @@ class Core(object):
         pass
 
 class VM(object):
-    def __init__(self, istream=[], dynamicMem=False, initMem=None):
+    def __init__(self, istream=[], dynamicMem=False, initMem=None, memSize=16):
         self.core = Core()
-        self.mem = [Value(None)] * memSize  # Memory
+        if initMem is not None:
+            self.mem = initMem
+        if len(self.mem) < memSize:
+            self.mem += [Value(None)] * (memSize - len(self.mem))
         self.dynamicMem = dynamicMem
         self.istream = [Value(i) for i in istream]  # For safety
         self.ostream = []
@@ -38,5 +42,19 @@ class VM(object):
             raise IndexError("That's not a valid place")
 
     # This seems unnecessary now but it may be potentially useful later
-    def runCmd(self, cmdFunc, *cmdArgs):
-        return cmdFunc(self, *cmdArgs)
+    def runCmd(self, cmd):
+        return getCommand(cmd.cmd)(self, *cmd.ops)
+
+    def step(self):
+        try:
+            cmd = self.cmd[self.core.pc]
+        except IndexError as e:
+            raise CommandError("reached end of program")
+        return self.runCmd(cmd)
+
+    def run(self):
+        try:
+            while True:
+                self.step()
+        except CommandError as e:
+            return self
