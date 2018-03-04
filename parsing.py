@@ -39,7 +39,6 @@ def readProgram(stream):
             isMeta = True
             memlen = int(meta[1])
             assert 0 < memlen <= MAX_INT
-            print(memlen)
             prog.dynamicMem = False
             prog.initMem += [Value(None)] * ((memlen - len(prog.initMem)) if len(prog.initMem) <= memlen else 0)
         if isMeta:

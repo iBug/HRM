@@ -1,0 +1,51 @@
+MEM - - - - -  - - - - -  - - - - -  - - - - -  - - - - 0
+MEMSIZE 25
+
+    INBOX   
+    COPYTO   [24]
+a:
+    COMMENT  3
+    COPYFROM 24
+    COPYTO   19
+    COMMENT  4
+b:
+    BUMPUP   24
+c:
+d:
+    INBOX   
+    JUMPZ    f
+    COPYTO   [24]
+    SUB      [19]
+    JUMPN    a
+    JUMP     b
+    COMMENT  1
+e:
+    COPYTO   19
+    COPYFROM 0
+    OUTBOX  
+    JUMP     d
+f:
+    BUMPDN   24
+g:
+    COPYFROM [19]
+    OUTBOX  
+    COMMENT  0
+    COPYFROM [24]
+    COPYTO   [19]
+    BUMPDN   24
+    JUMPZ    e
+    JUMPN    c
+    COMMENT  2
+    COPYTO   19
+    COPYTO   23
+    COMMENT  5
+h:
+i:
+    BUMPDN   23
+    JUMPN    g
+    COPYFROM [19]
+    SUB      [23]
+    JUMPN    h
+    COPYFROM 23
+    COPYTO   19
+    JUMP     i
